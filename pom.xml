@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.fleury</groupId>
+    <artifactId>prometheus-metrics-agent</artifactId>
+    <version>0.0.5-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- we want this to work with 1.6 compile code -->
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+
+        <agent.artifact.name>metrics-agent</agent.artifact.name>
+
+        <dropwizard.metrics>3.2.5</dropwizard.metrics>
+        <asm.version>5.1</asm.version>
+        <prometheus.version>0.0.26</prometheus.version>
+        <jackson.version>2.4.0</jackson.version>
+        <commons.beanutils>1.9.3</commons.beanutils>
+
+        <junit.version>4.11</junit.version>
+    </properties>
+
+
+    <modules>
+        <module>prometheus-metrics-agent-annotation</module>
+        <module>prometheus-metrics-agent-core</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
