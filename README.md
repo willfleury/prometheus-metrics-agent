@@ -1,4 +1,24 @@
 
+- [Motivation](#motivation)
+    - [Code Bloat Problem](#code-bloat-problem)
+  - [Instrumentation Metadata](#instrumentation-metadata)
+    - [Annotations](#annotations)
+    - [Configuration](#configuration)
+    - [Metric Labels](#metric-labels)
+      - [Dynamic Label Values](#dynamic-label-values)
+    - [What we actually Transform](#what-we-actually-transform)
+    - [Supported Languages](#supported-languages)
+  - [Agent Configuration](#agent-configuration)
+    - [Prometheus Configuration](#prometheus-configuration)
+    - [Agent Reporting](#agent-reporting)
+    - [Black and White Lists](#black-and-white-lists)
+    - [Logger Configuration](#logger-configuration)
+  - [Performance](#performance)
+  - [Dependencies](#dependencies)
+- [<a name="binaries-releases"></a>Binaries & Releases](#a-namebinaries-releasesabinaries-releases)
+- [Building](#building)
+- [Usage](#usage)
+- [Debugging](#debugging)
 
 
 Forked from the following agent project [https://github.com/willfleury/metrics-agent](https://github.com/willfleury/metrics-agent) and customised specifically for Prometheus and performance.
