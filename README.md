@@ -11,11 +11,11 @@
   - [Agent Configuration](#agent-configuration)
     - [Prometheus Configuration](#prometheus-configuration)
     - [Agent Reporting](#agent-reporting)
-    - [Black and White Lists](#black-and-white-lists)
+    - [Black & White Lists](#black-and-white-lists)
     - [Logger Configuration](#logger-configuration)
   - [Performance](#performance)
   - [Dependencies](#dependencies)
-- [<a name="binaries-releases"></a>Binaries & Releases](#a-namebinaries-releasesabinaries-releases)
+- [Binaries & Releases](#binaries-releases)
 - [Building](#building)
 - [Usage](#usage)
 - [Debugging](#debugging)
@@ -51,8 +51,8 @@ To instrument this programmatically we perform the following
 ```java
 // add class fields
 
-final Counter total = Metrics.createCounter("requests_total");
-final Counter failed = Metrics.createCounter("requests_failed");
+static final Counter total = Metrics.createCounter("requests_total");
+static final Counter failed = Metrics.createCounter("requests_failed");
 
 public Result performSomeTask() {
     total.inc();
@@ -75,9 +75,9 @@ Now lets add a timer to this also so we can see how long the method call takes.
 ```java
 // add class fields
 
-final Counter total = Metrics.createCounter("requests_total");
-final Counter failed = Metrics.createCounter("requests_failed");
-final Timer timer = Metrics.createTimer("requests_timer");
+static final Counter total = Metrics.createCounter("requests_total");
+static final Counter failed = Metrics.createCounter("requests_failed");
+static final Timer timer = Metrics.createTimer("requests_timer");
 
 public Result performSomeTask() {
     long startTime = System.nanoTime();
@@ -258,7 +258,7 @@ We start the default reporting (endpoint) for Prometheus which is the HttpServer
 Support for push based reporting could be easily added and made configurable. 
 
 
-### Black and White Lists
+### <a name="black-and-white-lists"></a>Black and White Lists
 
 Sometimes we only want to scan certain packages or classes which we wish to instrument. This could be to reduce the agent startup time or to work around problematic instrumentation situations. Note that the black and white lists do not take any annotations or metric configuration into account and essentially override them.
 
