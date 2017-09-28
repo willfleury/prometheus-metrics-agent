@@ -59,15 +59,14 @@ public class MetricClassVisitor extends ClassVisitor {
         boolean isSyntheticMethod = (access & ACC_SYNTHETIC) != 0;
         boolean isStaticMethod = (access & ACC_STATIC) != 0;
 
-        if (!isInterface && !isSyntheticMethod && mv != null &&
-                config.isWhiteListed(className) && !config.isBlackListed(className)) {
+        if (!isInterface && !isSyntheticMethod && mv != null) {
             List<Metric> metadata = config.findMetrics(className, name + desc);
 
             mv = new MetricAdapter(mv, className, access, name, desc, metadata);
             mv = new JSRInlinerAdapter(mv, access, name, desc, signature, exceptions);
         }
 
-        if (name.equals("<clinit>") && isStaticMethod) {
+        if (name.equals("<clinit>") && isStaticMethod && mv != null) {
             visitedStaticBlock = true;
 
             mv = new StaticBlockMethodVisitor(mv, classMetrics, className, access, name, desc);
