@@ -13,17 +13,17 @@ public class SyntheticMethodsTest extends BaseMetricTest {
 
     /**
      *
-     * The following generics results in two methods with the same name in the CountTimerInvocationsClass bytecode.. This
-     * confused the annotation scanning as annotations are placed on both the real and synthetic method.. Therefore need
-     * to check the method access code to ensure its not synthetic.
+     * The following generics results in two methods with the same annotation in the CountTimerInvocationsClass bytecode..
+     * This confused the annotation scanning as annotations are placed on both the real and synthetic method.. Therefore
+     * we need to check the method access code to ensure its not synthetic.
      *
-     * public counted(Lcom/fleury/metrics/agent/transformer/asm/injectors/OverrideMethodAnnotationTest$B;)V
-     * @Lcom/fleury/metrics/agent/annotation/Counted;(name="counted")
+     * public timed(Lcom/fleury/metrics/agent/transformer/asm/injectors/OverrideMethodAnnotationTest$B;)V
+     * @Lcom/fleury/metrics/agent/annotation/Timed;(name="timed")
      *   ...
      *
      *
-     * public synthetic bridge counted(Lcom/fleury/metrics/agent/transformer/asm/injectors/OverrideMethodAnnotationTest$A;)V
-     * @Lcom/fleury/metrics/agent/annotation/Counted;(name="counted")
+     * public synthetic bridge timed(Lcom/fleury/metrics/agent/transformer/asm/injectors/OverrideMethodAnnotationTest$A;)V
+     * @Lcom/fleury/metrics/agent/annotation/Timed;(name="timed")
      *   ...
      *
      *  See https://docs.oracle.com/javase/tutorial/java/generics/bridgeMethods.html
