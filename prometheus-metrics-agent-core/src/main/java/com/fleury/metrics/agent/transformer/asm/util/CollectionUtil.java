@@ -11,4 +11,8 @@ public class CollectionUtil {
 
         return false;
     }
+
+    public static <T> boolean isNotEmpty(Collection<T> collection) {
+        return !isEmpty(collection);
+    }
 }

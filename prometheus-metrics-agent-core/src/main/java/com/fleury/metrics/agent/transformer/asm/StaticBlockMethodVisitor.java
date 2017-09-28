@@ -2,7 +2,7 @@ package com.fleury.metrics.agent.transformer.asm;
 
 import static com.fleury.metrics.agent.config.Configuration.metricStaticFieldName;
 import static com.fleury.metrics.agent.model.LabelUtil.getLabelNames;
-import static com.fleury.metrics.agent.transformer.asm.util.CollectionUtil.isEmpty;
+import static com.fleury.metrics.agent.transformer.asm.util.CollectionUtil.isNotEmpty;
 
 import com.fleury.metrics.agent.model.Metric;
 import com.fleury.metrics.agent.reporter.PrometheusMetricSystem;
@@ -39,7 +39,7 @@ public class StaticBlockMethodVisitor extends AdviceAdapter {
         super.visitLdcInsn(metric.getName());
 
         // load labels
-        if (!isEmpty(metric.getLabels())) {
+        if (isNotEmpty(metric.getLabels())) {
             super.visitInsn(OpCodeUtil.getIConstOpcodeForInteger(metric.getLabels().size()));
             super.visitTypeInsn(ANEWARRAY, Type.getType(String.class).getInternalName());
 
@@ -88,7 +88,7 @@ public class StaticBlockMethodVisitor extends AdviceAdapter {
                 asArg(Type.getDescriptor(String.class)) + Type.getDescriptor(SimpleCollector.Builder.class), false);
         super.visitTypeInsn(CHECKCAST, builderClass);
 
-        if (!isEmpty(metric.getLabels())) {
+        if (isNotEmpty(metric.getLabels())) {
 
             super.visitInsn(OpCodeUtil.getIConstOpcodeForInteger(metric.getLabels().size()));
             super.visitTypeInsn(ANEWARRAY, Type.getType(String.class).getInternalName());

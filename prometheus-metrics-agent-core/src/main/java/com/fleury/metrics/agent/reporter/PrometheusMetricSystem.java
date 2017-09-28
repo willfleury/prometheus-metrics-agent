@@ -2,7 +2,6 @@ package com.fleury.metrics.agent.reporter;
 
 import static java.util.logging.Level.WARNING;
 
-import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
 import io.prometheus.client.Histogram;
@@ -29,16 +28,6 @@ public class PrometheusMetricSystem {
     private static final Logger LOGGER = Logger.getLogger(PrometheusMetricSystem.class.getName());
 
     private static final int DEFAULT_HTTP_PORT = 9899;
-    
-    private final Map<String, Object> configuration;
-
-    protected PrometheusMetricSystem(Map<String, Object> configuration) {
-        this.configuration = configuration;
-
-        new StandardExports().register();
-
-        addJVMMetrics(configuration);
-    }
 
     public static Counter createAndRegisterCounted(String name, String[] labels, String doc) {
         Counter.Builder builder = Counter.build().name(name).help(doc);
@@ -116,6 +105,16 @@ public class PrometheusMetricSystem {
         }
     }
 
+    private final Map<String, Object> configuration;
+
+    protected PrometheusMetricSystem(Map<String, Object> configuration) {
+        this.configuration = configuration;
+
+        new StandardExports().register();
+
+        addJVMMetrics(configuration);
+    }
+
     public void startDefaultEndpoint() {
         int port = DEFAULT_HTTP_PORT;
 
@@ -153,9 +152,5 @@ public class PrometheusMetricSystem {
         if (jvmMetrics.contains("classloader")) {
             new ClassLoadingExports().register();
         }
-    }
-
-    void reset() {
-        CollectorRegistry.defaultRegistry.clear();
     }
 }
