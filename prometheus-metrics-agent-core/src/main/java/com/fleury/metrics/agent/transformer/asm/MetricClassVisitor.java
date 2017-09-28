@@ -44,6 +44,7 @@ public class MetricClassVisitor extends ClassVisitor {
 
         this.classMetrics = config.findMetrics(className);
 
+        // add the static final metric fields (Counter,Histogram,Gauge) to the class
         for (Metric metric : classMetrics) {
             super.visitField(
                     ACC_PUBLIC + ACC_FINAL + ACC_STATIC,
@@ -59,6 +60,7 @@ public class MetricClassVisitor extends ClassVisitor {
         boolean isSyntheticMethod = (access & ACC_SYNTHETIC) != 0;
         boolean isStaticMethod = (access & ACC_STATIC) != 0;
 
+        // instrument the method
         if (!isInterface && !isSyntheticMethod && mv != null) {
             List<Metric> metadata = config.findMetrics(className, name + desc);
 
@@ -66,10 +68,11 @@ public class MetricClassVisitor extends ClassVisitor {
             mv = new JSRInlinerAdapter(mv, access, name, desc, signature, exceptions);
         }
 
+        // initialize static fields if the static initializer block already exists in the class
         if (name.equals("<clinit>") && isStaticMethod && mv != null) {
             visitedStaticBlock = true;
 
-            mv = new StaticBlockMethodVisitor(mv, classMetrics, className, access, name, desc);
+            mv = new StaticInitializerMethodVisitor(mv, classMetrics, className, access, name, desc);
         }
 
         return mv;
@@ -77,9 +80,10 @@ public class MetricClassVisitor extends ClassVisitor {
 
     @Override
     public void visitEnd() {
+        // add static initializer block (method) to initialize static fields
         if (!visitedStaticBlock) {
             MethodVisitor mv = super.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
-            mv = new StaticBlockMethodVisitor(mv, classMetrics, className, ACC_STATIC, "<clinit>", "()V");
+            mv = new StaticInitializerMethodVisitor(mv, classMetrics, className, ACC_STATIC, "<clinit>", "()V");
 
             mv.visitCode();
             mv.visitInsn(RETURN);

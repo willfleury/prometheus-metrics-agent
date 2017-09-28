@@ -12,12 +12,12 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AdviceAdapter;
 
-public class StaticBlockMethodVisitor extends AdviceAdapter {
+public class StaticInitializerMethodVisitor extends AdviceAdapter {
 
     private final List<Metric> classMetrics;
     private final String className;
 
-    public StaticBlockMethodVisitor(MethodVisitor mv, List<Metric> classMetrics, String className, int access, String name, String desc) {
+    public StaticInitializerMethodVisitor(MethodVisitor mv, List<Metric> classMetrics, String className, int access, String name, String desc) {
         super(ASM5, mv, access, name, desc);
 
         this.className = className;
