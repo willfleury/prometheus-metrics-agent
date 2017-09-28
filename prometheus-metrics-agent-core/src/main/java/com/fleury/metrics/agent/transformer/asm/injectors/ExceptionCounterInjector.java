@@ -1,6 +1,6 @@
 package com.fleury.metrics.agent.transformer.asm.injectors;
 
-import static com.fleury.metrics.agent.config.Configuration.metricStaticFieldName;
+import static com.fleury.metrics.agent.config.Configuration.staticFinalFieldName;
 
 import com.fleury.metrics.agent.model.Metric;
 import io.prometheus.client.Counter;
@@ -40,7 +40,7 @@ public class ExceptionCounterInjector extends AbstractInjector {
         aa.visitTryCatchBlock(startFinally, endFinally, endFinally, null);
         aa.visitLabel(endFinally);
 
-        aa.visitFieldInsn(GETSTATIC, className, metricStaticFieldName(metric), Type.getDescriptor(Counter.class));
+        aa.visitFieldInsn(GETSTATIC, className, staticFinalFieldName(metric), Type.getDescriptor(Counter.class));
         injectNameAndLabelToStack(metric);
         aa.visitMethodInsn(INVOKESTATIC, METRIC_REPORTER_CLASSNAME, METHOD, SIGNATURE, false);
         

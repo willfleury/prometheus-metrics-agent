@@ -1,6 +1,6 @@
 package com.fleury.metrics.agent.transformer.asm;
 
-import static com.fleury.metrics.agent.config.Configuration.metricStaticFieldName;
+import static com.fleury.metrics.agent.config.Configuration.staticFinalFieldName;
 import static org.objectweb.asm.Opcodes.ACC_FINAL;
 import static org.objectweb.asm.Opcodes.ACC_INTERFACE;
 import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
@@ -11,10 +11,8 @@ import static org.objectweb.asm.Opcodes.RETURN;
 
 import com.fleury.metrics.agent.config.Configuration;
 import com.fleury.metrics.agent.model.Metric;
-import io.prometheus.client.Counter;
 import java.util.List;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.JSRInlinerAdapter;
@@ -49,7 +47,7 @@ public class MetricClassVisitor extends ClassVisitor {
         for (Metric metric : classMetrics) {
             super.visitField(
                     ACC_PUBLIC + ACC_FINAL + ACC_STATIC,
-                    metricStaticFieldName(metric),
+                    staticFinalFieldName(metric),
                     Type.getDescriptor(metric.getType().getPrometheusMetric()), null, null).visitEnd();
         }
     }

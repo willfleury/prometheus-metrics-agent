@@ -1,10 +1,9 @@
 package com.fleury.metrics.agent.transformer.asm.injectors;
 
-import static com.fleury.metrics.agent.config.Configuration.metricStaticFieldName;
+import static com.fleury.metrics.agent.config.Configuration.staticFinalFieldName;
 
 import com.fleury.metrics.agent.model.Metric;
 import io.prometheus.client.Counter;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AdviceAdapter;
 
@@ -28,7 +27,7 @@ public class CounterInjector extends AbstractInjector {
 
     @Override
     public void injectAtMethodEnter() {
-        aa.visitFieldInsn(GETSTATIC, className, metricStaticFieldName(metric), Type.getDescriptor(Counter.class));
+        aa.visitFieldInsn(GETSTATIC, className, staticFinalFieldName(metric), Type.getDescriptor(Counter.class));
         injectNameAndLabelToStack(metric);
 
         aa.visitMethodInsn(INVOKESTATIC, METRIC_REPORTER_CLASSNAME, METHOD, SIGNATURE, false);

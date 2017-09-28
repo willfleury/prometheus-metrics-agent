@@ -1,6 +1,6 @@
 package com.fleury.metrics.agent.transformer.asm.injectors;
 
-import static com.fleury.metrics.agent.config.Configuration.metricStaticFieldName;
+import static com.fleury.metrics.agent.config.Configuration.staticFinalFieldName;
 
 import com.fleury.metrics.agent.model.Metric;
 import io.prometheus.client.Counter;
@@ -53,7 +53,7 @@ public class TimedExceptionCountedInjector extends AbstractInjector {
         aa.visitTryCatchBlock(startFinally, endFinally, endFinally, null);
         aa.visitLabel(endFinally);
 
-        aa.visitFieldInsn(GETSTATIC, className, metricStaticFieldName(exceptionMetric), Type.getDescriptor(Counter.class));
+        aa.visitFieldInsn(GETSTATIC, className, staticFinalFieldName(exceptionMetric), Type.getDescriptor(Counter.class));
         injectNameAndLabelToStack(exceptionMetric);
         aa.visitMethodInsn(INVOKESTATIC, METRIC_REPORTER_CLASSNAME, EXCEPTION_COUNT_METHOD, 
                 EXCEPTION_COUNT_SIGNATURE, false);
@@ -70,7 +70,7 @@ public class TimedExceptionCountedInjector extends AbstractInjector {
     }
 
     private void onFinally(int opcode) {
-        aa.visitFieldInsn(GETSTATIC, className, metricStaticFieldName(timerMetric), Type.getDescriptor(Histogram.class));
+        aa.visitFieldInsn(GETSTATIC, className, staticFinalFieldName(timerMetric), Type.getDescriptor(Histogram.class));
         injectNameAndLabelToStack(timerMetric);
 
         aa.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);

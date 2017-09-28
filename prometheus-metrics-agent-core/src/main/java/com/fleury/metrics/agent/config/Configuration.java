@@ -36,8 +36,8 @@ public class Configuration {
         return name.replaceAll("\\.", "/");
     }
 
-    public static String metricStaticFieldName(Metric metric) {
-        return "metrics$" + metric.getName()+"$"+metric.getType();
+    public static String staticFinalFieldName(Metric metric) {
+        return ("metrics$" + metric.getName()+"$"+metric.getType()).toUpperCase();
     }
 
     private final static ObjectMapper MAPPER = new ObjectMapper(new YAMLFactory()) {

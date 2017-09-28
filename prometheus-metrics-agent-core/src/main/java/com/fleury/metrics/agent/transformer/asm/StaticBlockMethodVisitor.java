@@ -1,6 +1,6 @@
 package com.fleury.metrics.agent.transformer.asm;
 
-import static com.fleury.metrics.agent.config.Configuration.metricStaticFieldName;
+import static com.fleury.metrics.agent.config.Configuration.staticFinalFieldName;
 import static com.fleury.metrics.agent.model.LabelUtil.getLabelNames;
 import static com.fleury.metrics.agent.transformer.asm.util.CollectionUtil.isNotEmpty;
 
@@ -67,7 +67,7 @@ public class StaticBlockMethodVisitor extends AdviceAdapter {
                 false);
 
         // store metric in class static field
-        super.visitFieldInsn(PUTSTATIC, className, metricStaticFieldName(metric),
+        super.visitFieldInsn(PUTSTATIC, className, staticFinalFieldName(metric),
                 Type.getDescriptor(metric.getType().getPrometheusMetric()));
     }
 
@@ -108,7 +108,7 @@ public class StaticBlockMethodVisitor extends AdviceAdapter {
 
         super.visitMethodInsn(INVOKEVIRTUAL, builderClass, "register", "()" + Type.getDescriptor(SimpleCollector.class), false);
         super.visitTypeInsn(CHECKCAST, baseClass);
-        super.visitFieldInsn(PUTSTATIC, className, metricStaticFieldName(metric), asDesc(baseClass));
+        super.visitFieldInsn(PUTSTATIC, className, staticFinalFieldName(metric), asDesc(baseClass));
     }
 
     private String asDesc(String className) {

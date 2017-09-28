@@ -1,9 +1,8 @@
 package com.fleury.metrics.agent.transformer.asm.injectors;
 
-import static com.fleury.metrics.agent.config.Configuration.metricStaticFieldName;
+import static com.fleury.metrics.agent.config.Configuration.staticFinalFieldName;
 
 import com.fleury.metrics.agent.model.Metric;
-import io.prometheus.client.Counter;
 import io.prometheus.client.Histogram;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
@@ -57,7 +56,7 @@ public class TimerInjector extends AbstractInjector {
     }
 
     private void onFinally(int opcode) {
-        aa.visitFieldInsn(GETSTATIC, className, metricStaticFieldName(metric), Type.getDescriptor(Histogram.class));
+        aa.visitFieldInsn(GETSTATIC, className, staticFinalFieldName(metric), Type.getDescriptor(Histogram.class));
         injectNameAndLabelToStack(metric);
 
         aa.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);

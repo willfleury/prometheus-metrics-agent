@@ -1,6 +1,6 @@
 package com.fleury.metrics.agent.transformer.asm.injectors;
 
-import static com.fleury.metrics.agent.config.Configuration.metricStaticFieldName;
+import static com.fleury.metrics.agent.config.Configuration.staticFinalFieldName;
 
 import com.fleury.metrics.agent.model.Metric;
 import io.prometheus.client.Gauge;
@@ -30,7 +30,7 @@ public class GaugeInjector extends AbstractInjector {
 
     @Override
     public void injectAtMethodEnter() {
-        aa.visitFieldInsn(GETSTATIC, className, metricStaticFieldName(metric), Type.getDescriptor(Gauge.class));
+        aa.visitFieldInsn(GETSTATIC, className, staticFinalFieldName(metric), Type.getDescriptor(Gauge.class));
         injectNameAndLabelToStack(metric);
 
         aa.visitMethodInsn(INVOKESTATIC, METRIC_REPORTER_CLASSNAME, INC_METHOD, SIGNATURE, false);
@@ -38,7 +38,7 @@ public class GaugeInjector extends AbstractInjector {
 
     @Override
     public void injectAtMethodExit(int opcode) {
-        aa.visitFieldInsn(GETSTATIC, className, metricStaticFieldName(metric), Type.getDescriptor(Gauge.class));
+        aa.visitFieldInsn(GETSTATIC, className, staticFinalFieldName(metric), Type.getDescriptor(Gauge.class));
         injectNameAndLabelToStack(metric);
 
         aa.visitMethodInsn(INVOKESTATIC, METRIC_REPORTER_CLASSNAME, DEC_METHOD, SIGNATURE, false);
