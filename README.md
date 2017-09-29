@@ -189,9 +189,9 @@ Labels are a concept in some reporting systems that allow for multi-dimensional 
 
 #### Dynamic Label Values
 
-A powerful feature is the ability to set label values dynamic based on variables available on the method stack. Metric names cannot be dynamic. The way we specify dynamic label values is using the `${index}` syntax followed by the method argument index. The special value `$this` can be used for referencing `this.toString()` in non static methods (i.e. where `this.` is valid).
+A powerful feature is the ability to set label values dynamic based on variables available on the method stack. Metric names cannot be dynamic. The way we specify dynamic label values is using the `${index}` syntax followed by the method argument index. The special value `$this` can be used to access the current instance reference in non static methods and non constructors (i.e. where `this.` is valid).
  
-Note that we restrict the stack usage to the method arguments only. That is, we don't allow use of variables created within the method as that is a very fragile thing to do. The String representation as given by `String.valueOf()` of the parameter is used as the label value. That means for primitive types we perform boxing first and null objects will result in the String `"null"`. Argument indexes start at index `0`. 
+Note that we restrict the stack usage to the method arguments only. That is, we don't allow use of variables created within the method as that is a very fragile thing to do. The String representation as given by `String.valueOf()` of the parameter is used as the label value. That means for primitive types we perform boxing first and null objects will result in the String `"null"`. Argument indexes start at index `0` for non static methods and 1 for static methods. 
 
 ```java
 @Counted (name = "service_total", labels = { "client:$0" })

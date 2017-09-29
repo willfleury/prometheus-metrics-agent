@@ -23,7 +23,7 @@ import org.objectweb.asm.commons.AdviceAdapter;
  */
 public abstract class AbstractInjector implements Injector, Opcodes {
 
-    public static final String METRIC_REPORTER_CLASSNAME = Type.getType(PrometheusMetricSystem.class).getInternalName();
+    public static final String METRIC_REPORTER_CLASSNAME = Type.getInternalName(PrometheusMetricSystem.class);
 
     protected final AdviceAdapter aa;
     protected final Type[] argTypes;
@@ -75,7 +75,7 @@ public abstract class AbstractInjector implements Injector, Opcodes {
         int labelVar = aa.newLocal(Type.getType(String[].class));
 
         aa.visitInsn(OpCodeUtil.getIConstOpcodeForInteger(labelValues.size()));
-        aa.visitTypeInsn(ANEWARRAY, Type.getType(String.class).getInternalName());
+        aa.visitTypeInsn(ANEWARRAY, Type.getInternalName(String.class));
 
         for (int i = 0; i < labelValues.size(); i++) {
             aa.visitInsn(DUP);
