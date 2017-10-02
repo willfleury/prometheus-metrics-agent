@@ -1,5 +1,5 @@
-# same as jersey.yaml
-# tested on Dropwizard 1.x
+# As Dropwizard resources are Jersey Resources running on Jetty, we simply need to instrument the same as Jersey.
+# Tested on Dropwizard 1.x but should work with any Jersey 2.x release
 
 imports:
   - com/fleury/resources/HelloWorldResource
@@ -42,3 +42,4 @@ system:
   jvm:
     - gc
     - memory
+    - threads
