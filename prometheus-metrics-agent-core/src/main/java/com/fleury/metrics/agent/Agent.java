@@ -21,7 +21,7 @@ public class Agent {
         initializeLogging(argParser.getLogConfigFilename());
 
         Configuration config = Configuration.createConfig(argParser.getConfigFilename());
-        PrometheusMetricSystemFactory.INSTANCE.init(config.getMetricSystemConfiguration());
+        PrometheusMetricSystemFactory.INSTANCE.init(config.getSystem());
 
         instrumentation.addTransformer(
                 new AnnotatedMetricClassTransformer(config),
