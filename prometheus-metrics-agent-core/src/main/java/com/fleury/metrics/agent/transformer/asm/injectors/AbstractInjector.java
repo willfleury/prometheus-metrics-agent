@@ -7,6 +7,7 @@ import static com.fleury.metrics.agent.model.LabelUtil.isTemplatedLabelValue;
 import static com.fleury.metrics.agent.model.LabelUtil.isThis;
 import static com.fleury.metrics.agent.transformer.asm.util.CollectionUtil.isNotEmpty;
 
+import com.fleury.metrics.agent.introspector.GenericClassIntrospector;
 import com.fleury.metrics.agent.model.LabelUtil;
 import com.fleury.metrics.agent.model.Metric;
 import com.fleury.metrics.agent.reporter.PrometheusMetricSystem;
@@ -24,6 +25,10 @@ import org.objectweb.asm.commons.AdviceAdapter;
 public abstract class AbstractInjector implements Injector, Opcodes {
 
     public static final String METRIC_REPORTER_CLASSNAME = Type.getInternalName(PrometheusMetricSystem.class);
+
+    static {
+        PropertyUtils.addBeanIntrospector(new GenericClassIntrospector());
+    }
 
     protected final AdviceAdapter aa;
     protected final Type[] argTypes;

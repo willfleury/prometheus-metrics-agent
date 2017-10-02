@@ -54,6 +54,12 @@ public class LabelsTest extends BaseMetricTest {
                 new Object[]{new CountedConstructorWithDynamicNestedLabelValueClass.Nester()}, new String[]{"hello"});
     }
 
+    @Test
+    public void shouldCountConstructorInvocationWithDynamicNestedNonJavaBeanValue() throws Exception {
+        testInvocationWithArgs(CountedConstructorWithDynamicNestedNonJavaBeanLabelValueClass.class,
+                new Object[]{new CountedConstructorWithDynamicNestedNonJavaBeanLabelValueClass.Nester()}, new String[]{"hello"});
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenInvalidParamIndexLabelValue() throws Exception {
         testInvocationWithArgs(CountedConstructorWithInvalidParamIndexLabelValueClass.class,
@@ -164,6 +170,20 @@ public class LabelsTest extends BaseMetricTest {
 
         @Counted(name = "constructor", labels = {"name1:$0.hello"})
         public CountedConstructorWithDynamicNestedLabelValueClass(Nester nester) {
+            BaseMetricTest.performBasicTask();
+        }
+    }
+
+    public static class CountedConstructorWithDynamicNestedNonJavaBeanLabelValueClass {
+
+        public static class Nester {
+            public String hello() {
+                return "hello";
+            }
+        }
+
+        @Counted(name = "constructor", labels = {"name1:$0.hello"})
+        public CountedConstructorWithDynamicNestedNonJavaBeanLabelValueClass(Nester nester) {
             BaseMetricTest.performBasicTask();
         }
     }

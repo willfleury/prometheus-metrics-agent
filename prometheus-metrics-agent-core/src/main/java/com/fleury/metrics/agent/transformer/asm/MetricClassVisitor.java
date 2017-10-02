@@ -62,7 +62,7 @@ public class MetricClassVisitor extends ClassVisitor {
 
         // instrument the method
         if (!isInterface && !isSyntheticMethod && mv != null) {
-            List<Metric> metadata = config.findMetrics(className, name + desc);
+            List<Metric> metadata = config.findMetrics(className, name, desc);
 
             mv = new MetricAdapter(mv, className, access, name, desc, metadata);
             mv = new JSRInlinerAdapter(mv, access, name, desc, signature, exceptions);
