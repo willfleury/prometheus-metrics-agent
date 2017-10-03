@@ -114,9 +114,9 @@ public class PrometheusMetricSystem {
 
         new StandardExports().register();
 
-        addJVMMetrics(configuration);
+        addJvmMetrics(configuration);
 
-        addJMXScraper(configuration);
+        addJmxCollector(configuration);
     }
 
     public void startDefaultEndpoint() {
@@ -136,7 +136,7 @@ public class PrometheusMetricSystem {
         }
     }
 
-    private void addJMXScraper(Map<String, Object> configuration) {
+    private void addJmxCollector(Map<String, Object> configuration) {
         if (!configuration.containsKey("jmx")) {
             return;
         }
@@ -149,7 +149,7 @@ public class PrometheusMetricSystem {
         }
     }
 
-    private void addJVMMetrics(Map<String, Object> configuration) {
+    private void addJvmMetrics(Map<String, Object> configuration) {
         if (!configuration.containsKey("jvm")) {
             return;
         }
