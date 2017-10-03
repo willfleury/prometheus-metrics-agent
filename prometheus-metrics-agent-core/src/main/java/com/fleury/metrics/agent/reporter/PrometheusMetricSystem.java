@@ -1,5 +1,6 @@
 package com.fleury.metrics.agent.reporter;
 
+import static com.fleury.metrics.agent.config.Configuration.YAML_MAPPER;
 import static java.util.logging.Level.WARNING;
 
 import io.prometheus.client.Counter;
@@ -11,6 +12,7 @@ import io.prometheus.client.hotspot.GarbageCollectorExports;
 import io.prometheus.client.hotspot.MemoryPoolsExports;
 import io.prometheus.client.hotspot.StandardExports;
 import io.prometheus.client.hotspot.ThreadExports;
+import io.prometheus.jmx.JmxCollector;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -113,6 +115,8 @@ public class PrometheusMetricSystem {
         new StandardExports().register();
 
         addJVMMetrics(configuration);
+
+        addJMXScraper(configuration);
     }
 
     public void startDefaultEndpoint() {
@@ -129,6 +133,19 @@ public class PrometheusMetricSystem {
 
         } catch (Exception e) { //widen scope in case of ClassNotFoundException on non oracle/sun JVM
             LOGGER.log(WARNING, "Unable to register Prometheus HttpServer on port " + port, e);
+        }
+    }
+
+    private void addJMXScraper(Map<String, Object> configuration) {
+        if (!configuration.containsKey("jmx")) {
+            return;
+        }
+
+        try {
+            String jmxConfig = YAML_MAPPER.writeValueAsString(configuration.get("jmx"));
+            new JmxCollector(jmxConfig).register();
+        } catch (Exception e) {
+            LOGGER.log(WARNING, "Problem starting JmxCollector", e);
         }
     }
 

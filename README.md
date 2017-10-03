@@ -11,6 +11,8 @@
     - [Supported Languages](#supported-languages)
   - [Agent Configuration](#agent-configuration)
     - [Prometheus Configuration](#prometheus-configuration)
+      - [JVM Metrics](#jvm-metrics)
+      - [JMX Metrics](#jmx-metrics)
     - [Agent Reporting](#agent-reporting)
     - [Black & White Lists](#black-and-white-lists)
     - [Logger Configuration](#logger-configuration)
@@ -257,6 +259,7 @@ You can do the same for Kotlin, Clojure and any other JVM language. Be aware tha
 
 ### Prometheus Configuration
 
+#### JVM Metrics
 Prometheus supports adding JVM level metrics information obtained from the JVM via MBeans for 
 
 - gc
@@ -270,6 +273,24 @@ To enable each, simply add the metrics you want to a `jvm` property in the `syst
         jvm:
            - gc
            - memory
+
+#### JMX Metrics
+We also include the Prometheus JmxCollector from the [JmxExporter](https://github.com/prometheus/jmx_exporter) project in this agent as it allows collecting other JMX metrics from the JVM one might want to. To enable the JmxCollector simply add a `jmx` section in the system configuration and add configuration as shown in the [JmxExporter](https://github.com/prometheus/jmx_exporter) project. The configuration is passed straight through to the JmxCollector constructor.
+
+    system:
+        jmx:
+            startDelaySeconds: 0
+            whitelistObjectNames: ["org.apache.cassandra.metrics:*"]
+            blacklistObjectNames: ["org.apache.cassandra.metrics:type=ColumnFamily,*"]
+            rules:
+              - pattern: 'org.apache.cassandra.metrics<type=(\w+), name=(\w+)><>Value: (\d+)'
+                name: cassandra_$1_$2
+                value: $3
+                valueFactor: 0.001
+                labels: {}
+                help: "Cassandra metric $1 $2"
+                type: GAUGE
+                attrNameSnakeCase: false
 
 
 ### Agent Reporting

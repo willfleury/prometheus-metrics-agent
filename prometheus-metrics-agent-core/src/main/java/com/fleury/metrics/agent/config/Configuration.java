@@ -46,7 +46,7 @@ public class Configuration {
         return ("metrics$" + metric.getName()+"$"+metric.getType()).toUpperCase();
     }
 
-    private final static ObjectMapper MAPPER = new ObjectMapper(new YAMLFactory()) {
+    public final static ObjectMapper YAML_MAPPER = new ObjectMapper(new YAMLFactory()) {
         {
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             configure(JsonParser.Feature.STRICT_DUPLICATE_DETECTION, true);
@@ -72,7 +72,7 @@ public class Configuration {
 
     public static Configuration createConfig(InputStream is) {
         try {
-            return MAPPER.readValue(is, Configuration.class);
+            return YAML_MAPPER.readValue(is, Configuration.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
