@@ -80,27 +80,27 @@ public class Metric {
         private List<String> labels;
         private String mode;
 
-        public MetricBuilder withType(MetricType type) {
+        public MetricBuilder type(MetricType type) {
             this.type = type;
             return this;
         }
 
-        public MetricBuilder withName(String name) {
+        public MetricBuilder name(String name) {
             this.name = name;
             return this;
         }
 
-        public MetricBuilder withDoc(String doc) {
+        public MetricBuilder doc(String doc) {
             this.doc = doc;
             return this;
         }
 
-        public MetricBuilder withLabels(List<String> labels) {
+        public MetricBuilder labels(List<String> labels) {
             this.labels = labels;
             return this;
         }
 
-        public MetricBuilder withMode(String mode) {
+        public MetricBuilder mode(String mode) {
             this.mode = mode;
             return this;
         }

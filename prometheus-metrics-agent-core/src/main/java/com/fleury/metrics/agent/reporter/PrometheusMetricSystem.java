@@ -121,7 +121,7 @@ public class PrometheusMetricSystem {
         startDefaultEndpoint();
     }
 
-    public void startDefaultEndpoint() {
+    private void startDefaultEndpoint() {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
