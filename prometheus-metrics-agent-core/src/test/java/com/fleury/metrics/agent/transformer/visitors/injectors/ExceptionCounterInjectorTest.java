@@ -74,7 +74,7 @@ public class ExceptionCounterInjectorTest extends BaseMetricTest {
         public ExceptionCountedConstructorClass() {
             callService();
         }
-        
+
         public final void callService() {
             BaseMetricTest.performBasicTask();
             throw new RuntimeException(EXCEPTION_TEXT);

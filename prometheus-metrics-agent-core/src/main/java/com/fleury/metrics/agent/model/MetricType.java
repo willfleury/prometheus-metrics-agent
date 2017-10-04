@@ -21,12 +21,12 @@ public enum MetricType {
     ExceptionCounted(ExceptionCounted.class, Counter.class);
 
     private final Class annotation;
-    private final Class prometheusMetric;
+    private final Class coreType;
     private final String desc;
 
-    MetricType(Class annotation, Class prometheusMetric) {
+    MetricType(Class annotation, Class coreType) {
         this.annotation = annotation;
-        this.prometheusMetric = prometheusMetric;
+        this.coreType = coreType;
         this.desc = Type.getDescriptor(annotation);
     }
 
@@ -34,8 +34,8 @@ public enum MetricType {
         return annotation;
     }
 
-    public Class getPrometheusMetric() {
-        return prometheusMetric;
+    public Class getCoreType() {
+        return coreType;
     }
     
     public String getDesc() {

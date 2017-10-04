@@ -1,15 +1,31 @@
 package com.fleury.metrics.agent.transformer.visitors.injectors;
 
 import static com.fleury.metrics.agent.config.Configuration.staticFinalFieldName;
+import static com.fleury.metrics.agent.model.MetricType.Counted;
+import static com.fleury.metrics.agent.model.MetricType.Timed;
 
 import com.fleury.metrics.agent.model.Metric;
-import io.prometheus.client.Counter;
-import io.prometheus.client.Histogram;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AdviceAdapter;
 
 /**
+ *
+ * <pre>
+ * public void someMethod() {
+ *     long startTimer = System.nanoTime();
+ *     try {
+ *
+ *         //original method code
+ *
+ *     } catch (Throwable t) {
+ *         PrometheusMetricSystem.recordCount(COUNTER, labels);
+ *         throw t;
+ *     } finally {
+ *         PrometheusMetricSystem.recordTime(TIMER, labels);
+ *     }
+ * }
+ * </pre>
  *
  * @author Will Fleury
  */
@@ -18,12 +34,12 @@ public class TimedExceptionCountedInjector extends AbstractInjector {
     private static final String EXCEPTION_COUNT_METHOD = "recordCount";
     private static final String EXCEPTION_COUNT_SIGNATURE = Type.getMethodDescriptor(
             Type.VOID_TYPE,
-            Type.getType(Counter.class), Type.getType(String.class), Type.getType(String[].class));
+            Type.getType(Counted.getCoreType()), Type.getType(String[].class));
     
     private static final String TIMER_METHOD = "recordTime";
     private static final String TIMER_SIGNATURE = Type.getMethodDescriptor(
             Type.VOID_TYPE,
-            Type.getType(Histogram.class), Type.getType(String.class), Type.getType(String[].class), Type.LONG_TYPE);
+            Type.getType(Timed.getCoreType()), Type.getType(String[].class), Type.LONG_TYPE);
     
     private final Metric timerMetric;
     private final Metric exceptionMetric;
@@ -53,8 +69,8 @@ public class TimedExceptionCountedInjector extends AbstractInjector {
         aa.visitTryCatchBlock(startFinally, endFinally, endFinally, null);
         aa.visitLabel(endFinally);
 
-        aa.visitFieldInsn(GETSTATIC, className, staticFinalFieldName(exceptionMetric), Type.getDescriptor(Counter.class));
-        injectNameAndLabelToStack(exceptionMetric);
+        aa.visitFieldInsn(GETSTATIC, className, staticFinalFieldName(exceptionMetric), Type.getDescriptor(Counted.getCoreType()));
+        injectLabelsToStack(exceptionMetric);
         aa.visitMethodInsn(INVOKESTATIC, METRIC_REPORTER_CLASSNAME, EXCEPTION_COUNT_METHOD, 
                 EXCEPTION_COUNT_SIGNATURE, false);
         
@@ -70,8 +86,8 @@ public class TimedExceptionCountedInjector extends AbstractInjector {
     }
 
     private void onFinally(int opcode) {
-        aa.visitFieldInsn(GETSTATIC, className, staticFinalFieldName(timerMetric), Type.getDescriptor(Histogram.class));
-        injectNameAndLabelToStack(timerMetric);
+        aa.visitFieldInsn(GETSTATIC, className, staticFinalFieldName(timerMetric), Type.getDescriptor(Timed.getCoreType()));
+        injectLabelsToStack(timerMetric);
 
         aa.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
         aa.visitVarInsn(LLOAD, startTimeVar);

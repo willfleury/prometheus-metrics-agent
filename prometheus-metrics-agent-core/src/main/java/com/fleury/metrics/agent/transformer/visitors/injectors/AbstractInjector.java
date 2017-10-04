@@ -54,43 +54,22 @@ public abstract class AbstractInjector implements Injector, Opcodes {
     public void injectAtMethodExit(int opcode) {
     }
 
-    protected void injectNameAndLabelToStack(Metric metric) {
-        int nameVar = aa.newLocal(Type.getType(String.class));
-        aa.visitLdcInsn(metric.getName());
-        aa.visitVarInsn(ASTORE, nameVar);
-
+    protected void injectLabelsToStack(Metric metric) {
         List<String> labelValues = LabelUtil.getLabelValues(metric.getLabels());
 
         if (isNotEmpty(labelValues)) {
-            int labelVar = injectLabelValuesArrayToStack(metric, labelValues);
+            aa.visitInsn(OpCodeUtil.getIConstOpcodeForInteger(labelValues.size()));
+            aa.visitTypeInsn(ANEWARRAY, Type.getInternalName(String.class));
 
-            aa.visitVarInsn(ALOAD, nameVar);
-            aa.visitVarInsn(ALOAD, labelVar);
+            for (int i = 0; i < labelValues.size(); i++) {
+                aa.visitInsn(DUP);
+                aa.visitInsn(OpCodeUtil.getIConstOpcodeForInteger(i));
+                injectLabelValueToStack(labelValues.get(i));
+            }
+
         } else {
-            aa.visitVarInsn(ALOAD, nameVar);
             aa.visitInsn(ACONST_NULL);
         }
-    }
-
-    protected int injectLabelValuesArrayToStack(Metric metric, List<String> labelValues) {
-        if (labelValues.size() > 5) {
-            throw new IllegalStateException("Maximum labels per metric is 5. "
-                    + metric.getName() + " has " + labelValues.size());
-        }
-        int labelVar = aa.newLocal(Type.getType(String[].class));
-
-        aa.visitInsn(OpCodeUtil.getIConstOpcodeForInteger(labelValues.size()));
-        aa.visitTypeInsn(ANEWARRAY, Type.getInternalName(String.class));
-
-        for (int i = 0; i < labelValues.size(); i++) {
-            aa.visitInsn(DUP);
-            aa.visitInsn(OpCodeUtil.getIConstOpcodeForInteger(i));
-            injectLabelValueToStack(labelValues.get(i));
-        }
-
-        aa.visitVarInsn(ASTORE, labelVar);
-
-        return labelVar;
     }
 
     private void injectLabelValueToStack(String labelValue) {

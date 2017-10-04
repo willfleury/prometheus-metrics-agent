@@ -49,7 +49,7 @@ public class MetricClassVisitor extends ClassVisitor {
             super.visitField(
                     ACC_PUBLIC + ACC_FINAL + ACC_STATIC,
                     staticFinalFieldName(metric),
-                    Type.getDescriptor(metric.getType().getPrometheusMetric()), null, null).visitEnd();
+                    Type.getDescriptor(metric.getType().getCoreType()), null, null).visitEnd();
         }
     }
 

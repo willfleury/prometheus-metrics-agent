@@ -1,15 +1,28 @@
 package com.fleury.metrics.agent.transformer.visitors.injectors;
 
 import static com.fleury.metrics.agent.config.Configuration.staticFinalFieldName;
+import static com.fleury.metrics.agent.model.MetricType.Gauged;
 
 import com.fleury.metrics.agent.model.Metric;
-import io.prometheus.client.Gauge;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AdviceAdapter;
 
 /**
- * Only currently supports IN_FLIGHT mode which means it tracks the number of method calls in flight. To achieve this
- * it increments on method enter and decrements on method exit.
+ * Only currently supports IN_FLIGHT mode which means it tracks the number of method calls in flight.
+ *
+ * <pre>
+ * public void someMethod() {
+ *     PrometheusMetricSystem.recordGaugeInc(GAUGE, labels);
+ *     try {
+ *
+ *         //original method code
+ *
+ *     } finally {
+ *         PrometheusMetricSystem.recordGaugeDec(GAUGE, labels);
+ *     }
+ * }
+ * </pre>
  *
  * @author Will Fleury
  */
@@ -19,9 +32,11 @@ public class GaugeInjector extends AbstractInjector {
     private static final String DEC_METHOD = "recordGaugeDec";
     private static final String SIGNATURE = Type.getMethodDescriptor(
             Type.VOID_TYPE,
-            Type.getType(Gauge.class), Type.getType(String.class), Type.getType(String[].class));
+            Type.getType(Gauged.getCoreType()), Type.getType(String[].class));
 
     private final Metric metric;
+
+    private Label startFinally;
     
     public GaugeInjector(Metric metric, AdviceAdapter aa, String className, Type[] argTypes, int access) {
         super(aa, className, argTypes, access);
@@ -30,18 +45,36 @@ public class GaugeInjector extends AbstractInjector {
 
     @Override
     public void injectAtMethodEnter() {
-        aa.visitFieldInsn(GETSTATIC, className, staticFinalFieldName(metric), Type.getDescriptor(Gauge.class));
-        injectNameAndLabelToStack(metric);
+        startFinally = new Label();
+        aa.visitLabel(startFinally);
+
+        aa.visitFieldInsn(GETSTATIC, className, staticFinalFieldName(metric), Type.getDescriptor(Gauged.getCoreType()));
+        injectLabelsToStack(metric);
 
         aa.visitMethodInsn(INVOKESTATIC, METRIC_REPORTER_CLASSNAME, INC_METHOD, SIGNATURE, false);
     }
 
     @Override
+    public void injectAtVisitMaxs(int maxStack, int maxLocals) {
+        Label endFinally = new Label();
+        aa.visitTryCatchBlock(startFinally, endFinally, endFinally, null);
+        aa.visitLabel(endFinally);
+
+        onFinally(ATHROW);
+        aa.visitInsn(ATHROW);
+    }
+
+    @Override
     public void injectAtMethodExit(int opcode) {
-        aa.visitFieldInsn(GETSTATIC, className, staticFinalFieldName(metric), Type.getDescriptor(Gauge.class));
-        injectNameAndLabelToStack(metric);
+        if (opcode != ATHROW) {
+            onFinally(opcode);
+        }
+    }
+
+    private void onFinally(int opcode) {
+        aa.visitFieldInsn(GETSTATIC, className, staticFinalFieldName(metric), Type.getDescriptor(Gauged.getCoreType()));
+        injectLabelsToStack(metric);
 
         aa.visitMethodInsn(INVOKESTATIC, METRIC_REPORTER_CLASSNAME, DEC_METHOD, SIGNATURE, false);
     }
-
 }

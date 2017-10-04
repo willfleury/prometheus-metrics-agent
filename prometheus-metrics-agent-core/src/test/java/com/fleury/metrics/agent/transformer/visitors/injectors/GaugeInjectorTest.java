@@ -41,6 +41,7 @@ public class GaugeInjectorTest extends BaseMetricTest {
 
         //allow request to finish
         inProgressLatch.countDown();
+        assertEquals(0, inProgressLatch.getCount());
 
         callFinishedLatch.await();
 
@@ -81,6 +82,7 @@ public class GaugeInjectorTest extends BaseMetricTest {
 
         //allow request to finish
         inProgressLatch.countDown();
+        assertEquals(0, inProgressLatch.getCount());
 
         callFinishedLatch.await();
 
@@ -116,6 +118,7 @@ public class GaugeInjectorTest extends BaseMetricTest {
 
         //allow request to finish
         inProgressLatch.countDown();
+        assertEquals(0, inProgressLatch.getCount());
 
         callFinishedLatch.await();
 
@@ -129,9 +132,7 @@ public class GaugeInjectorTest extends BaseMetricTest {
         public GaugedConstructorClass(CountDownLatch latch) {
             try {
                 latch.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            } catch (InterruptedException e) { }
         }
     }
 
@@ -141,10 +142,13 @@ public class GaugeInjectorTest extends BaseMetricTest {
         public GaugedConstructorExceptionClass(CountDownLatch latch) {
             try {
                 latch.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            } catch (InterruptedException e) { }
 
+            callService();
+        }
+
+        public final void callService() {
+            BaseMetricTest.performBasicTask();
             throw new RuntimeException("Something bad..");
         }
     }
@@ -155,9 +159,7 @@ public class GaugeInjectorTest extends BaseMetricTest {
         public void handleRequest(CountDownLatch latch) {
             try {
                 latch.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            } catch (InterruptedException e) { }
         }
     }
 

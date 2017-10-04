@@ -67,7 +67,7 @@ public class PrometheusMetricSystem {
         return builder.register();
     }
 
-    public static void recordCount(Counter counter, String name, String[] labels) {
+    public static void recordCount(Counter counter, String[] labels) {
         if (labels != null) {
             counter.labels(labels).inc();
         } else {
@@ -75,7 +75,7 @@ public class PrometheusMetricSystem {
         }
     }
 
-    public static void recordCount(Counter counter, String name, String[] labels, long n) {
+    public static void recordCount(Counter counter, String[] labels, long n) {
         if (labels != null) {
             counter.labels(labels).inc(n);
         } else {
@@ -83,7 +83,7 @@ public class PrometheusMetricSystem {
         }
     }
 
-    public static void recordGaugeInc(Gauge gauge, String name, String[] labelValues) {
+    public static void recordGaugeInc(Gauge gauge, String[] labelValues) {
         if (labelValues != null) {
             gauge.labels(labelValues).inc();
         } else {
@@ -91,7 +91,7 @@ public class PrometheusMetricSystem {
         }
     }
 
-    public static void recordGaugeDec(Gauge gauge, String name, String[] labelValues) {
+    public static void recordGaugeDec(Gauge gauge, String[] labelValues) {
         if (labelValues != null) {
             gauge.labels(labelValues).dec();
         } else {
@@ -99,7 +99,7 @@ public class PrometheusMetricSystem {
         }
     }
 
-    public static void recordTime(Histogram histogram, String name, String[] labels, long duration) {
+    public static void recordTime(Histogram histogram, String[] labels, long duration) {
         if (labels != null) {
             histogram.labels(labels).observe(duration);
         } else {

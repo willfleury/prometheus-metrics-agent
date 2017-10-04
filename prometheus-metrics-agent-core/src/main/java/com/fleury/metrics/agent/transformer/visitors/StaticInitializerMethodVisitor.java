@@ -12,6 +12,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AdviceAdapter;
 
+
 public class StaticInitializerMethodVisitor extends AdviceAdapter {
 
     private final List<Metric> classMetrics;
@@ -39,8 +40,13 @@ public class StaticInitializerMethodVisitor extends AdviceAdapter {
 
         // load labels
         if (isNotEmpty(metric.getLabels())) {
+            if (metric.getLabels().size() > 5) {
+                throw new IllegalStateException("Maximum labels per metric is 5. "
+                        + metric.getName() + " has " + metric.getLabels().size());
+            }
+
             super.visitInsn(OpCodeUtil.getIConstOpcodeForInteger(metric.getLabels().size()));
-            super.visitTypeInsn(ANEWARRAY, Type.getType(String.class).getInternalName());
+            super.visitTypeInsn(ANEWARRAY, Type.getInternalName(String.class));
 
             List<String> labelNames = getLabelNames(metric.getLabels());
             for (int i = 0; i < labelNames.size(); i++) {
@@ -62,12 +68,12 @@ public class StaticInitializerMethodVisitor extends AdviceAdapter {
         super.visitMethodInsn(INVOKESTATIC, Type.getInternalName(PrometheusMetricSystem.class),
                 "createAndRegister" + metric.getType().name(),
                 Type.getMethodDescriptor(
-                        Type.getType(metric.getType().getPrometheusMetric()),
+                        Type.getType(metric.getType().getCoreType()),
                         Type.getType(String.class), Type.getType(String[].class), Type.getType(String.class)),
                 false);
 
         // store metric in class static field
         super.visitFieldInsn(PUTSTATIC, className, staticFinalFieldName(metric),
-                Type.getDescriptor(metric.getType().getPrometheusMetric()));
+                Type.getDescriptor(metric.getType().getCoreType()));
     }
 }
