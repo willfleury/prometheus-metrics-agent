@@ -26,17 +26,5 @@ public class Agent {
         instrumentation.addTransformer(
                 new AnnotatedMetricClassTransformer(config),
                 instrumentation.isRetransformClassesSupported());
-
-        startDefaultMetricEndpoint();
-    }
-
-    private static void startDefaultMetricEndpoint() {
-        //start in background thread so we don't delay application startup
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                PrometheusMetricSystemFactory.INSTANCE.get().startDefaultEndpoint();
-            }
-        }).start();
     }
 }
