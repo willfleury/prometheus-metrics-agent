@@ -61,7 +61,8 @@ public class StaticInitializerMethodVisitor extends AdviceAdapter {
         // call PrometheusMetricSystem.createAndRegisterCounted/Timed/Gauged(...)
         super.visitMethodInsn(INVOKESTATIC, Type.getInternalName(PrometheusMetricSystem.class),
                 "createAndRegister" + metric.getType().name(),
-                Type.getMethodDescriptor(Type.getType(metric.getType().getPrometheusMetric()),
+                Type.getMethodDescriptor(
+                        Type.getType(metric.getType().getPrometheusMetric()),
                         Type.getType(String.class), Type.getType(String[].class), Type.getType(String.class)),
                 false);
 
