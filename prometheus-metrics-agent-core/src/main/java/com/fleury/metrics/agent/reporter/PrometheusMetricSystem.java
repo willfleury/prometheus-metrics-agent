@@ -1,5 +1,6 @@
 package com.fleury.metrics.agent.reporter;
 
+import static com.fleury.metrics.agent.config.Configuration.YAML_MAPPER;
 import static java.util.logging.Level.WARNING;
 
 import io.prometheus.client.Counter;
@@ -11,6 +12,7 @@ import io.prometheus.client.hotspot.GarbageCollectorExports;
 import io.prometheus.client.hotspot.MemoryPoolsExports;
 import io.prometheus.client.hotspot.StandardExports;
 import io.prometheus.client.hotspot.ThreadExports;
+import io.prometheus.jmx.JmxCollector;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -112,27 +114,51 @@ public class PrometheusMetricSystem {
 
         new StandardExports().register();
 
-        addJVMMetrics(configuration);
+        addJvmMetrics(configuration);
+
+        addJmxCollector(configuration);
+
+        startDefaultEndpoint();
     }
 
-    public void startDefaultEndpoint() {
-        int port = DEFAULT_HTTP_PORT;
+    private void startDefaultEndpoint() {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int port = DEFAULT_HTTP_PORT;
 
-        if (configuration.containsKey("httpPort")) {
-            port = Integer.parseInt((String)configuration.get("httpPort"));
+                if (configuration.containsKey("httpPort")) {
+                    port = Integer.parseInt((String)configuration.get("httpPort"));
+                }
+
+                try {
+                    LOGGER.fine("Starting Prometheus HttpServer on port " + port);
+
+                    new HTTPServer(port);
+
+                } catch (Exception e) { //widen scope in case of ClassNotFoundException on non oracle/sun JVM
+                    LOGGER.log(WARNING, "Unable to register Prometheus HttpServer on port " + port, e);
+                }
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    private void addJmxCollector(Map<String, Object> configuration) {
+        if (!configuration.containsKey("jmx")) {
+            return;
         }
 
         try {
-            LOGGER.fine("Starting Prometheus HttpServer on port " + port);
-
-            new HTTPServer(port);
-
-        } catch (Exception e) { //widen scope in case of ClassNotFoundException on non oracle/sun JVM
-            LOGGER.log(WARNING, "Unable to register Prometheus HttpServer on port " + port, e);
+            String jmxConfig = YAML_MAPPER.writeValueAsString(configuration.get("jmx"));
+            new JmxCollector(jmxConfig).register();
+        } catch (Exception e) {
+            LOGGER.log(WARNING, "Problem starting JmxCollector", e);
         }
     }
 
-    private void addJVMMetrics(Map<String, Object> configuration) {
+    private void addJvmMetrics(Map<String, Object> configuration) {
         if (!configuration.containsKey("jvm")) {
             return;
         }

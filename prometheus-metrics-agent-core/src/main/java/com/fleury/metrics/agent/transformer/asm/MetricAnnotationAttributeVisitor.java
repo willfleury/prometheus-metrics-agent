@@ -23,7 +23,7 @@ public class MetricAnnotationAttributeVisitor extends AnnotationVisitor {
         this.config = config;
         this.metricKey = metricKey;
 
-        this.metricBuilder = Metric.builder().withType(metricType);
+        this.metricBuilder = Metric.builder().type(metricType);
     }
 
     @Override
@@ -31,9 +31,9 @@ public class MetricAnnotationAttributeVisitor extends AnnotationVisitor {
         super.visit(name, value);
 
         if ("name".equals(name)) {
-            metricBuilder.withName(value.toString());
+            metricBuilder.name(value.toString());
         } else if ("doc".equals(name)) {
-            metricBuilder.withDoc(value.toString());
+            metricBuilder.doc(value.toString());
         }
     }
 
@@ -42,7 +42,7 @@ public class MetricAnnotationAttributeVisitor extends AnnotationVisitor {
         super.visit(name, value);
 
         if ("mode".equals(name)) {
-            metricBuilder.withMode(value);
+            metricBuilder.mode(value);
         }
     }
 
@@ -51,7 +51,7 @@ public class MetricAnnotationAttributeVisitor extends AnnotationVisitor {
         if ("labels".equals(name)) {
 
             final List<String> labels = new ArrayList<String>();
-            metricBuilder.withLabels(labels);
+            metricBuilder.labels(labels);
 
             return new AnnotationVisitor(ASM5, av) {
 
