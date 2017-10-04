@@ -8,8 +8,15 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AdviceAdapter;
 
 /**
+ * Transforms from
  *
- * Implements
+ * <pre>
+ * public void someMethod() {
+ *     //original method code
+ * }
+ * </pre>
+ *
+ * To
  *
  * <pre>
  * public void someMethod() {

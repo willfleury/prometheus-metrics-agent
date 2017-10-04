@@ -10,6 +10,15 @@ import org.objectweb.asm.commons.AdviceAdapter;
 
 /**
  * Only currently supports IN_FLIGHT mode which means it tracks the number of method calls in flight.
+ * Transforms from
+ *
+ * <pre>
+ * public void someMethod() {
+ *     //original method code
+ * }
+ * </pre>
+ *
+ * To
  *
  * <pre>
  * public void someMethod() {
